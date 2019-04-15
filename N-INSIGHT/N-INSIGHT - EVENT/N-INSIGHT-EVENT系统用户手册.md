@@ -38,13 +38,13 @@
 
 ## 2.1  系统构成
 
-![1555313893869](assets/1555313893869.png)
+![system_arch](imgs/system_arch.png)
 
 图2-1      系统架构图
 
 ## 2.2  运行环境 
 
-![1555313959195](assets/1555313959195.png)
+![network_top](imgs/network_top.png)
 
 图2-2 N-Insight网络拓扑图
 
