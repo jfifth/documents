@@ -105,7 +105,7 @@ vi  /var/lib/pgsql/10/data/postgresql.conf
 
 配置信息如下所示，主要修改配置文件中listen_addresses这一属性，这个属性用来限制可以访问postgre数据库的主机，默认为localhost(表示数据库只能接受本地的客户端连接请求，不能接受远程的客户端连接请求)，需要修改为(所有客户端均可访问)或n06(也可以是ip地址，多个地址需要逗号分隔)，把listen_addresses前面的注释去掉，并修改值为:listen_addresses = '*'
 
-![img](file:///C:/Users/admin/AppData/Local/Temp/msohtmlclip1/01/clip_image006.jpg)
+![1555317599814](assets/1555317599814.png)
 
 修改后保存退出（:wq）
 
