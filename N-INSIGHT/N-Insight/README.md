@@ -5,5 +5,5 @@
 
 测试图片
 
-![1555311791634](C:\Users\admin\Desktop\documents\N-INSIGHT\N-Insight\assets\1555311791634.png)
+![1555311791634](.\assets\1555311791634.png)
 
