@@ -1,4 +1,4 @@
-# N-Insight系统用户手册
+# N-INSIGHT-EVENT系统用户手册
 
 # 1.  文档说明
 
