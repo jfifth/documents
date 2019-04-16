@@ -18,24 +18,24 @@ tar  zxvf  jdk-8u201-linux-x64.tar.gz
 
 配置环境变量
 
-```
+```shell
 vim  ~/.bash_profile
 ```
 
-```
+```shell
 export  JAVA_HOME=/usr/java/jdk1.8.0_201
 export  PATH=$PATH:$JAVA_HOME/bin
 ```
 
 使配置生效
 
-```
+```shell
 source  ~/.bash_profile
 ```
 
 查看Jdk安装是否正常
 
-```
+```shell
 java  -version
 ```
 

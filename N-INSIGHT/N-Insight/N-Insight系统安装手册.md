@@ -197,7 +197,6 @@ DO项目由多个子应用组成，并且应用还需要集群化，每台机器
 
 ```shell
 cd  /opt/do
-
 ls -al
 ```
 
@@ -208,8 +207,6 @@ ls -al
 ```shell
 tar  -xvf  Configurator.tar
 ```
-
-
 
 ### 3.2.3  配置N-Insight参数
 
@@ -229,23 +226,14 @@ Spark数据源作为计算引擎，需要以下参数：
 
 ```properties
 spark1.source-type=XDR-CMCC-SPARK
-
 spark1.type=XDR-CMCC-SPARK
-
 spark1.title=CMDI Hadoop ENV
-
 spark1.arg.home=/opt/do/spark-2.2.0
-
 spark1.arg.configuration=/opt/do/spark-2.2.0/conf1
-
 spark1.arg.name=Toolbox-nokia
-
 spark1.arg.hivedb=result
-
 spark1.arg.hdfs=hdfs://bjmcc-hdp-cluster-node-06.do:8020/output/
-
 spark1.arg.staging=hdfs://vm73:8020/user/hdfs/.sparkStaging/
-
 spark1.arg.hiveSetting=mapred.input.dir.recursive=true
 ```
 
@@ -265,23 +253,14 @@ spark1.arg.hiveSetting=mapred.input.dir.recursive=true
 
 ```properties
 mysql1.source-type=MYSQL-NORMAL
-
 mysql1.type=MYSQL-NORMAL
-
 mysql1.title=CMDI MySQL
-
 mysql1.arg.host=10.254.201.233
-
 mysql1.arg.port=3306
-
 mysql1.arg.database=volte
-
 mysql1.arg.username=********
-
 mysql1.arg.password=********
-
 mysql1.arg.data_dir=/opt/do/Toolbox/data
-
 mysql1.arg.charset=utf-8
 ```
 
@@ -300,7 +279,6 @@ mysql1.arg.charset=utf-8
 
 ```shell
 cd  /opt/do/Configurator/etc/Toolbox
-
 ls -al
 ```
 
@@ -356,7 +334,6 @@ vi  /opt/do/Configurator/etc/Toolbox/system.properties
 
 ```shell
 cd  /opt/do/Configurator/etc/
-
 cat web.properties
 ```
 
@@ -394,7 +371,6 @@ Connection refused表示该端口没有被占用
 
 ```shell
 cd /opt/do
-
 tar -xvf Toolbox.tar
 ```
 
@@ -404,7 +380,6 @@ tar -xvf Toolbox.tar
 
 ```shell
 cd Toolbox/etc
-
 vi this.properties
 ```
 
@@ -418,7 +393,6 @@ vi this.properties
 
 ```shell
 cd /opt/do/Toolbox
-
 ./startup.sh
 ```
 
@@ -427,3 +401,16 @@ cd /opt/do/Toolbox
 ## 3.4  大数据客户端
 
 大数据客户端需要Hadoop集群平台运维人员安装。
+
+
+
+# 4. check列表
+
+| 模块      | 功能     | Check result                                                 |
+| --------- | -------- | ------------------------------------------------------------ |
+| postgres  | 登陆功能 | 在N-Insight所在主机使用用户名密码通过psql或jdbc访问postgres服务器，确认是否能能正登陆。 |
+| postgres  | 系统表   | 登陆postgres，确认登陆相关表、工具箱相关表是否已存在。       |
+| N-Insight | 插件列表 | 查看N-Insight插件列表是否完整。                              |
+| N-Insight | 启动     | 查看N-Insight启过程中的日志信息是否存在异常N-Insight         |
+| 大数据    | 客户端   | 查看hdfs、hive、spark等客户端是否能正常使用。                |
+
