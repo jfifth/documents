@@ -10,7 +10,7 @@
 tar  zxvf  jdk-8u201-linux-x64.tar.gz
 
 目录结构如下
-![](assets\20190416080011.png)
+![1111](assets\20190416080011.png)
 
 配置环境变量
 
