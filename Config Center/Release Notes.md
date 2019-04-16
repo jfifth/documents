@@ -4,9 +4,10 @@
 
 ##### Features:
 
-- Properties在线编辑
-- Xml在线编辑
-- 文件修改通知下发
+- Properties文件在线编辑
+- Xml文件在线编辑
+- INI文件在线编辑
+- 文件修改通知下发,即增加发送MQ消息通知功能
 
 ### Version 2.0: [2016-11-01]
 
@@ -26,4 +27,8 @@
 
 - 支持HTTP方式获取文件
 - 支持Properties文件
+- 支持XML文件
+- 支持INI文件
+- 支持tabledefinition文件
 - 支持分产品功能目录
+
