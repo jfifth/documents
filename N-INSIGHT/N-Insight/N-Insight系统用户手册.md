@@ -44,17 +44,19 @@
 
 ![1555313893869](assets/1555313893869.png)
 
-图2-1      系统架构图
-
 ## 2.2  运行环境 
 
 ![1555313959195](assets/1555313959195.png)
 
-图2-2 N-Insight网络拓扑图
-
 ### **2.2.1**  **硬件环境**
 
-N-Insight运行在大数据环境外的客户端节点，由于Spark Driver程序一般都运行在该节点，所以硬件的配置与专题的复杂度相关，一般情况下需要64G内存，16线程CPU。
+N-Insight运行在大数据环境外的客户端节点，在生产过程中有三种类型的程序需要使用资源：
+
+- **N-Insight**：负责启动所有插件，根据需要启动应用服务器、消息队列、Zookeeper等服务。
+- **Spark Driver**：调度专题过程中，N-Insight会向Hadoop提交Spark任务，Spark任务包含两部分：Driver、Exector。Driver只有一个，可以运行在客户端，也可以运行在集群环境。Exector根据数据量不同，可以是多个，必须运行在集群环境。根据需要，可以指定Driver和Exector的CPU线程数及内存大小。由于一些特定情况，比如Hadoop集群中的JDK版本低于1.8，Driver进程就必须以client模式运行。
+- **Data Loader**：专题数据在Hadoop集群环境中计算完成后，需要把计算结果导出到关系数据库，以供界面查询展示。一般情况下，导出的数据量会比较大，为了提升导出效率，会使用数据库的load工具。load工具会占用一些资源，特别是Greenplum的gpload和Oracle的sqlload。导出的数据量越大，占用的资源越多。
+
+对理硬件的要求与专题的复杂度和数据量相关，一般的项目需要64G内存，16线程CPU。
 
 ### **2.2.2**  **软件环境**
 
@@ -76,10 +78,10 @@ N-Insight运行在大数据环境外的客户端节点，由于Spark Driver程�
 ![1555314052183](assets/1555314052183.png)
 
 - **基础参数设置->计划标题**：执行的专题计划的名称，标题名可以重复。
-- **数据源选择->Spark Runtime**: 这个是在工具箱配置文件etc/Toolbox/datasource.properties配置的。意思为本次专题执行要读取的数据源。
-- **数据源选择->green结果库**:这个是在工具箱配置文件etc/Toolbox/datasource.properties配置的。意思为本次专题执行结果输出到关系型gp库。
-- **数据源选择->hive结果库**:这个是在工具箱配置文件etc/Toolbox/datasource.properties配置的。意思为本次专题执行结果输出到hive库。当然也可以把本次专题的执行结果输出到hdfs上。
-- **数据源选择->hdfs结果库**:这个需要在工具箱配置文件etc/Toolbox/datasource.properties配置的。意思为本次专题执行结果输出到hdfs上。
+- **数据源选择->Spark Runtime**: 选择指定专的的计算引擎，目前支持Spark、Oracle、Greenplum。需要在N-Insight的配置文件etc/Toolbox/datasource.properties中做对应的计算引擎配置信息。
+- **数据源选择->green结果库**:如果专题计算过程中需要合使用Greenplum的数据源或计算结果要导入到Greenplum，则需要选择对应的GP库。上图列表中的待选项需要在N-Insight的配置文件etc/Toolbox/datasource.properties进行配置。
+- **数据源选择->hive结果库**:如果专题计算过程中需要合使用hive的数据源或计算结果要保存到hive，则需要选择对应的hive库。上图列表中的待选项需要在N-Insight的配置文件etc/Toolbox/datasource.properties进行配置。
+- **数据源选择->hdfs结果库**:如果专题计算过程中需要合使用hdfs数据源或计算结果要保存到hdfs。上图列表中的待选项需要在N-Insight的配置文件etc/Toolbox/datasource.properties进行配置。
 
 #### 3.1.2 执行方式和报告消息
 
@@ -87,7 +89,7 @@ N-Insight运行在大数据环境外的客户端节点，由于Spark Driver程�
 
 ![1555314853110](assets/1555314853110.png)
 
-- **立即执行**：配置好本计划之后，点击提交，本计划将会立即执行。
+- **立即执行**：完成计划专题配置后点提交，本计划将会立即执行。
 - **指定时间执行**：配置一个执行计划开始时间,点击提交,该执行计划会在你指定的时间开始执行。
 
 ![1555314261061](assets/1555314261061.png)

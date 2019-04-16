@@ -1,7 +1,7 @@
 # N-Insight系列文档
 
 
-[N-Insight系统Release Notes](./N-Insight系统Release Notes.md)
+[N-Insight系统ReleaseNotes](./N-Insight系统ReleaseNotes.md)
 
 [N-Insight系统安装手册](./N-Insight系统安装手册.md)
 
