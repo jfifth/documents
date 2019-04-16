@@ -1,9 +1,5 @@
 # N-Insight系统Release Notes
 
-版本 1.0
-
-目录
-
 [TOC]
 
 
@@ -23,59 +19,60 @@
 
 # 2.系统主要特性
 
-​     N-Insight使用Java语言开发，所有的模块基于OSGI插件化，可根据项目需要选择不同的插件组合。目前支持Oracle、Greenplum、Spark计算模型，专题可以基于三种计算模型进行指标计算。专题也可以插件化，并且支持热插拔。  
+N-Insight使用Java语言开发，所有的模块基于OSGI插件化，可根据项目需要选择不同的插件组合。目前支持Oracle、Greenplum、Spark计算模型，专题可以基于三种计算模型进行指标计算。专题也可以插件化，并且支持热插拔。  
 
-​    在N-Insight中可以周期、定时、消息等方式调度专题。专题计算完成后会把结果数据根据需要写入到HDFS/Hive或者关系库。
+在N-Insight中可以周期、定时、消息等方式调度专题。专题计算完成后会把结果数据根据需要写入到HDFS/Hive或者关系库。
 
 # 3.模块构成
 
 ##  3.1N-Insight系统由以下模块构成：
 
-`com.nsn.configurator：`配置文件管理插件。
+- com.nsn.configurator：配置文件管理插件。
 
-com.nsn.datamining：N-Insight集群化基础功能组件插件。
+- com.nsn.datamining：N-Insight集群化基础功能组件插件。
 
-com.nsn.datamining.mysql：Mysql计算引擎插件。
+- com.nsn.datamining.mysql：Mysql计算引擎插件。
 
-com.nsn.datamining.spark：Spark计算引擎插件。
+- com.nsn.datamining.spark：Spark计算引擎插件。
 
-com.nsn.datamining.support.xdr.cmcc：中国移动XDR数据源基础插件。
+- com.nsn.datamining.support.xdr.cmcc：中国移动XDR数据源基础插件。
 
-com.nsn.datamining.support.xdr.ctc：中国电信XDR数据源基础插件。
+- com.nsn.datamining.support.xdr.ctc：中国电信XDR数据源基础插件。
 
-com.nsn.datamining.support.xdr.cuc：中国联通XDR数据源基础插件。
+- com.nsn.datamining.support.xdr.cuc：中国联通XDR数据源基础插件。
 
-com.nsn.datamining.support.xdr.normal：通用(统一版本)XDR数据源基础插件。
+- com.nsn.datamining.support.xdr.normal：通用(统一版本)XDR数据源基础插件。
 
-com.nsn.do.cluster：N-Insight集群化服务启动插件。
+- com.nsn.do.cluster：N-Insight集群化服务启动插件。
 
-com.nsn.executer：多线程工具插件。
+- com.nsn.executer：多线程工具插件。
 
-com.nsn.io：I/O工具插件
+- com.nsn.io：I/O工具插件
 
-com.nsn.logger：日志工具插件。
+- com.nsn.logger：日志工具插件。
 
-com.nsn.messages：MQ消息队列工具插件
+- com.nsn.messages：MQ消息队列工具插件
 
-com.nsn.scanner：(ftp、操作系统、hdfs等)文件、kafka数据扫描插件。
+- com.nsn.scanner：(ftp、操作系统、hdfs等)文件、kafka数据扫描插件。
 
-com.nsn.scheduler：任务调度插件。
+- com.nsn.scheduler：任务调度插件。
 
-com.nsn.util：常用工具类插件。
+- com.nsn.util：常用工具类插件。
 
-com.nsn.web：基于jetty的Web服务插件。
+- com.nsn.web：基于jetty的Web服务插件。
 
-com.nsn.web.configurator：管理配置文件的web服务插件。
+- com.nsn.web.configurator：管理配置文件的web服务插件。
 
-com.nsn.web.do：Web界面框架插件。
+- com.nsn.web.do：Web界面框架插件。
 
-com.nsn.web.do.login：Web登陆管理插件。
+- com.nsn.web.do.login：Web登陆管理插件。
 
-com.nsn.web.do.nologin：Web免登陆插件。
+- com.nsn.web.do.nologin：Web免登陆插件。
 
-com.nsn.web.do.tbox：N-Insight Web服务插件。
+- com.nsn.web.do.tbox：N-Insight Web服务插件。
 
-com.nsn.web.do.tbox.shell：shell调度插件。
+- com.nsn.web.do.tbox.shell：shell调度插件。
+
 
 ## 3.2 模块间交互及整体的数据流向
 
