@@ -1,9 +1,6 @@
-# N-INSIGHT系列文档
-## N-INSIGHT基础开发框架
-## FLOW-INSIGHT
-## EVENT-INSIGHT
+# N-Insight系列文档
+[N-Insight系统Release Notes](./N-Insight系统Release Notes.md)
 
-测试图片
+[N-Insight系统安装手册](./N-Insight系统安装手册.md)
 
-![1555311791634](./assets/1555311791634.png)
-
+[N-Insight系统用户手册](./N-Insight系统用户手册.md)
