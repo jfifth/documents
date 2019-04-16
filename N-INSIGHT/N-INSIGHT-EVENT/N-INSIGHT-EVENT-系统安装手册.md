@@ -1,4 +1,4 @@
-# N-Insight系统安装手册
+# N-INSIGHT-EVENT系统安装手册
 
 [TOC]
 
@@ -6,9 +6,9 @@
 
 ## 1.1  阅读对象
 
-本手册是N-Insight系统的安装手册。它指导读者如何正确对N-Insight系统进行安装，平台数据进行配置，以及使用过程中的注意事项。
+本手册是N-INSIGHT-EVENT系统的安装手册。它指导读者如何正确对N-INSIGHT-EVENT系统进行安装，平台数据进行配置，以及使用过程中的注意事项。
 
-本手册面向的主要对象是N-Insight系统管理员及维护人员。也可以为N-Insight系统的安装调试工程师提供指导。
+本手册面向的主要对象是N-INSIGHT-EVENT系统管理员及维护人员。也可以为N-INSIGHT-EVENT系统的安装调试工程师提供指导。
 
 ## 1.2  缩略语
 
@@ -35,39 +35,26 @@
 
 ## 2.1  系统构成
 
-![1555316071144](assets/1555316071144.png)
+![system_arch2](imgs/system_arch2.png)
 
-N-Insight使用Java语言开发，所有的模块基于OSGI插件化，可根据项目需要选择不同的插件组合。插件主要有两种类型：基础必选插件和根据实际需求可选插件。
+N-INSIGHT-EVENT使用Java/Scala语言开发，基于Spark平台，提供一套通用的大数据平台合成框架，各个项目上可以使用自己的业务插件
 
 ### 2.1.1  常用插件列表
 
-- com.nsn.configurator：配置文件管理插件。
-- com.nsn.datamining：N-Insight集群化基础功能组件插件。
-- com.nsn.datamining.mysql：Mysql计算引擎插件。
-- com.nsn.datamining.spark：Spark计算引擎插件。
-- com.nsn.datamining.support.xdr.cmcc：中国移动XDR数据源基础插件。
-- com.nsn.datamining.support.xdr.ctc：中国电信XDR数据源基础插件。
-- com.nsn.datamining.support.xdr.cuc：中国联通XDR数据源基础插件。
-- com.nsn.datamining.support.xdr.normal：通用(统一版本)XDR数据源基础插件。
-- com.nsn.do.cluster：N-Insight集群化服务启动插件。
-- com.nsn.executer：多线程工具插件。
+- com.nsn.compact: 对象压缩算法插件，提升效率
+- com.nsn.kv：redis集群访问插件。
+- com.nsn.redis：自研java版本redis，解决项目现场无法提供redis的情况。
+- com.nsn.redis.spark：自研基于spark的redis集群版本。
+- com.nsn.state：合成状态机。
+- com.nsn.xdrcomposer.plan：大数据合成执行计划。
+- com.nsn.xdrcomposer.spark：大数据合成spark定制框架。
 - com.nsn.io：I/O工具插件
 - com.nsn.logger：日志工具插件。
-- com.nsn.messages：MQ消息队列工具插件
-- com.nsn.scanner：(ftp、操作系统、hdfs等)文件、kafka数据扫描插件。
-- com.nsn.scheduler：任务调度插件。
-- com.nsn.util：常用工具类插件。
-- com.nsn.web：基于jetty的Web服务插件。
-- com.nsn.web.configurator：管理配置文件的web服务插件。
-- com.nsn.web.do：Web界面框架插件。
-- com.nsn.web.do.login：Web登陆管理插件。
-- com.nsn.web.do.nologin：Web免登陆插件。
-- com.nsn.web.do.tbox：N-Insight Web服务插件。
-- com.nsn.web.do.tbox.shell：shell调度插件。
+
 
 ## 2.2    拓朴结构
 
-![1555316090599](assets/1555316090599.png)
+![network_top2](imgs/network_top2.png)
 
 ## 2.3    软件部署
 
