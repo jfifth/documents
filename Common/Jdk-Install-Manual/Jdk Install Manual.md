@@ -1,10 +1,14 @@
 操作系统平台：Linux
 
+## 1.软件下载
+
 打开oracle官网下载地址
 ![](assets/20190416075059.png)
 
 使用wget下载
  wget  https://download.oracle.com/otn-pub/java/jdk/8u201-b09/42970487e3af4f5aa5bca3f542482c60/jdk-8u201-linux-x64.tar.gz
+
+## 2.软件安装
 
 解压即可
 tar  zxvf  jdk-8u201-linux-x64.tar.gz
