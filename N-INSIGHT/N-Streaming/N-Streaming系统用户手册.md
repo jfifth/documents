@@ -88,11 +88,11 @@ IoT项目根据2/4G XDR接口数据过滤出IoT相关数据，对过滤后的数
 
 ![1555377982397](assets/1555377982397.png)
 
-- 基础参数设置->计划标题：执行的专题计划的名称，标题名可以重复。
-- 数据源选择->Spark Runtime: 这个是在工具箱配置文件etc/Toolbox/datasource.properties配置的。意思为本次专题执行要读取的数据源。
-- 数据源选择->green结果库:这个是在工具箱配置文件etc/Toolbox/datasource.properties配置的。意思为本次专题执行结果输出到关系型gp库。
-- 数据源选择->hive结果库:这个是在工具箱配置文件etc/Toolbox/datasource.properties配置的。意思为本次专题执行结果输出到hive库。当然也可以把本次专题的执行结果输出到hdfs上。
-- 数据源选择->hdfs结果库:这个需要在工具箱配置文件etc/Toolbox/datasource.properties配置的。意思为本次专题执行结果输出到hdfs上。
+- **基础参数设置->计划标题**：执行的专题计划的名称，标题名可以重复。
+- **数据源选择->Spark Runtime**: 选择指定专的的计算引擎，目前支持Spark、Oracle、Greenplum。需要在N-Insight的配置文件etc/Toolbox/datasource.properties中做对应的计算引擎配置信息。
+- **数据源选择->green结果库**:如果专题计算过程中需要合使用Greenplum的数据源或计算结果要导入到Greenplum，则需要选择对应的GP库。上图列表中的待选项需要在N-Insight的配置文件etc/Toolbox/datasource.properties进行配置。
+- **数据源选择->hive结果库**:如果专题计算过程中需要合使用hive的数据源或计算结果要保存到hive，则需要选择对应的hive库。上图列表中的待选项需要在N-Insight的配置文件etc/Toolbox/datasource.properties进行配置。
+- **数据源选择->hdfs结果库**:如果专题计算过程中需要合使用hdfs数据源或计算结果要保存到hdfs。上图列表中的待选项需要在N-Insight的配置文件etc/Toolbox/datasource.properties进行配置。
 
 ### 3.1.2    执行方式和报告消息
 
