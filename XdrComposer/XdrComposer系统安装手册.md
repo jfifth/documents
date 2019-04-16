@@ -64,7 +64,7 @@ XdrComposer合成是其中不可缺少的数据处理层，用于多个接口数
 图2-2 XdrComposer数据流图
 
 
-## 2.2    拓朴结构
+## 2.2    运行环境
 
 ![XdrComposer_tuopu](assets/XdrComposer_tuopu.png)
 
@@ -80,351 +80,190 @@ mkdir /opt/do
 
 注：该平台所有安装的软件都安装在/opt/do
 
+### 2.3.1    安装包介绍
 
+XdrComposer主要包括以下几部分：
 
-## 2.4    安装包介绍
+- **JDK**： Java运行环境。
+- **ANT**： Apache-ant。
+- **Configurator**： 配置中心，提供配置参数。
+- **DataLoader-LTE2CMCC**：将BIN文件转化CSV,包括字段回填。
+- **DB关系库**：GP或Oracle数据库，需要安装GP或Oracle的客户端。
+- **XdrComposer**：XdrComposer合成安装包。
 
-N-Insight安装主要包括以下几部分：
+### 2.3.2    安装次序概述
 
-- **Postgres数据库**：用于存放N-Insight计划任务、专题、执行结果等相关数据。
-- **配置中心：**为N-Insight提供web方式的配置参数。
-- **N-Insight**：调度N-Streaming的插件集合。
-- **大数据客户端**：用于调hdfs/hive数据及提交Spark任务。
-- **指标数据库客户端：**如果结果指标数据使用GP或Oracle数据库，需要安装GP或Oracle的客户端。
+- **JDK1.8安装** 详见JAVA运行环境安装
+- **ANT安装** 详见ANT安装
+- **安装Configurator** 详见配置中心部署文档
+- **DataLoader-LTE2CMCC**： 详见DataLoader-LTE2CMCC部署文档
+- **XdrComposer安装**：XdrComposer安装。
+
 
 # 3.  系统安装
 
-## 3.1  Postgres数据库
+### 3.1.1 JDK1.8安装完成
+### 3.1.2 Apache-ant安装完成
+### 3.1.3 Configurator软件安装完毕
+  安装可参考Configurator安装手册
+### 3.1.4 DataLoader-LTE2CMCC软件安装完毕
+  合成的数据源是CSV文件，DataLoader-LTE2CMCC将解码器输出的BIN文件转化成CSV，同时会做一些数据的回填
 
-### 3.1.1    修改配置文件
+  安装可参考DataLoader-LTE2CMCC部署安装手册
 
-#### 3.1.1.1    postgresql.conf
+### 3.1.5 数据库验证
+  首先，确保如下sql可正常执行，且有数据可查出，否则不具备部署XdrComposer条件：
+  >select t.para_name,t.default_value from tas_master.cfg_composer_para t;--合成参数配置表
 
-使用vi编辑postgresql.conf：
+  >select t.ne_name as "NE_NAME",t.ne_ip as "NE_IP",t.ne_ipn as "NE_IPN",t.ne_type as "NE_TYPE",t.ne_sub_type as "NE_NET_TYPE" from tas_master.v_cfg_ipconf t;--网元配置表
 
-```shell
-vi  /var/lib/pgsql/10/data/postgresql.conf
-```
+  >select t.tac as "TAC",t.brand as "BRAND",t.model as "MODEL",t.category as "CATEGORY",t.os as "OS" from tas_master.cfg_tac t;--TAC表
 
-配置信息如下所示，主要修改配置文件中listen_addresses这一属性，这个属性用来限制可以访问postgre数据库的主机，默认为localhost(表示数据库只能接受本地的客户端连接请求，不能接受远程的客户端连接请求)，需要修改为(所有客户端均可访问)或n06(也可以是ip地址，多个地址需要逗号分隔)，把listen_addresses前面的注释去掉，并修改值为:listen_addresses = '*'
+  其次，如果项目中包含CSFB合成，则还需要保证如下sql正常执行，且有数据可查出
+  >select t.no as "NE_CODE",t.area as "AREA",t.mss_name as "NE_NAME",t.na1_spc as "NA1_SPC" from tas_master.cfg_2g_na1spc t;-- 2G小区表 如果不需要CSFB则不需要该表
 
-![1555317599814](assets/1555317599814.png)
+## 3.2 XdrComposer安装
+XdrComposer不再支持单机部署，必须集群安装。
 
-修改后保存退出（:wq）
+集群部署时，节点按功能区分为：控制节点、处理节点（读节点）、数据节点（写节点）
 
-#### 3.1.1.2    pg_hba.conf
+如何区分，详见4.2.6中的配置说明中标黄地方
 
-使用vi编辑主机名：
+### 3.2.1	修改程序运行环境配置文件
+#### 3.2.1.1 修改config.sh
+文件路径：../XdrComposer{-CN}/config.sh
+![XdrComposer_config](assets/XdrComposer_config.png)
 
-```shell
-vi  /var/lib/pgsql/10/data/pg_hba.conf
-```
+配置项的具体含义如下
 
-TYPE定义了多种连接PostgreSQL的方式，一般分为：
+| FRAMEWORK_HOME | 当前节点部署路径                                             |
+| -------------- | ------------------------------------------------------------ |
+| JAVA_HOME      | JAVA安装目录                                                 |
+| JVM_MEM_MIN    | 最小内存    除控制节点外统一配置64G（调优除外）    控制节点配置2G |
+| JVM_MEM_MAX    | 最大内存    除控制节点外统一配置64G（调优除外）    控制节点配置2G |
+| JVM_MEM_NEW    | 年轻代内存    除控制节点外统一配置32G（调优除外）    控制节点配置1G |
 
-- loca使用本地unix套接字
-- host使用TCP/IP连接（包括SSL和非SSL），host结合IPv4地址/结合IPv6地址
-- hostssl只能使用SSL TCP/IP连接
-- hostnossl不能使用SSL TCP/IP连接
 
-METHOD为身份验证模式一般分为：ident、trust、md5、password、peer、reject。其中ident和peer模式仅适用于Linux、Unix和Max，不适用于Windows。
+#### 3.2.1.2	修改this.properties
+文件路径./XdrComposer{-CN}/etc/this.properties
 
-- trust该模式可以不用密码直接连接数据库，不安全
-- md5该模式很常用，要求连接发起者携带用md5算法加密的密码
-- password该模式是使用明文密码进行身份验证，也不安全，不推荐
-- ident该模式下系统会将请求发起者的操作系统用户映射为PostgesSQL数据库内部用户，并以该内部用户的权限登录，且此时无需提供登录密码。操作系统用户与数据库内部用户之间的映射关系会记录在pg_ident.conf文件中。
-- peer该模式使用连接发起端的操作系统名进行身份验证。仅限于Linux、BSD、Mac OS X和Solaris，并且仅可用于本地服务器发起的连接。
-- reject该模式表示拒绝所有请求。
+![img](assets/this.png)
+#### 3.2.1.3	修改cluster.xml
+文件路径./XdrComposer{-CN}/cluster.xml
+![img](assets/cluster.png)
 
-多种身份验证模式可以同时使用，即使是针对同一个数据库。对于每一个连接请求，postgres服务器会按照pg_hba.conf文件中记录的规则条目自上而下进行检查。当匹配到第一条满足条件的规则，就不再向下检查。如果到文件末尾都没有搜到匹配的规则，那么按默认规则处理，即拒绝该链接。本次需要添加下以配置：
+标注为蓝色对应集群的控制节点，红色对应处理节点，按照实际部署的IP、用户名密码、路径进行修改。cluster.xml只需要在控制节点里进行修改，处理节点不用关心。部署的时候直接将整个XdrComposer目录拷贝一份出来作为处理节点即可。若需配置多个处理节点，则需要在cluster.xml文件里添加相关配置。参考上面截图中红色部分
 
-```shell
-host all   all   192.168.168.0/32   md5
-```
+#### 3.2.1.4	修改配置中心
+文件路径./Configurator/etc/XdrComposer/
 
-![1555316325359](assets/1555316325359.png)
+- 集群控制节点和处理节点具体怎么分配，主要取决于配置中心中的cluster.properties[id]和business.properties[id]的具体内容。
+- 修改cluster.properties[999]，此时weigth=0，且没有配置server为true，说明该cluster.properties[999]对应控制节点，999和控制节点this.properties中的id对应。此时应将文件中的IP替换为控制节点所在机器IP。
 
-修改后保存退出（:wq）
+![img](assets/clip_image002.jpg)
 
-#### 3.1.1.3    重新启动postgre服务
+[注意]
+- 程序启动后会去读取配置中心的cluster.properties[id]的内容，只有当cluster.properties[id]内容中设置了server=true且weigth=0.0的才处理为控制节点，如果cluster.properties[id]内容中没有设置server=true，则server默认为false，说明该节点为处理节点。
+- 一套集群环境中只能有一个控制节点，可以设置多个处理节点。修改cluster.properties[11]，将文件中的IP替换为处理节点所在机器IP。此时cluster.properties[11]中weigth>0，且没有配置server为true，说明该节点为处理节点，11和处理节点this.properties中的id对应
 
-重新启动postgre：
+![img](assets/clip_image002-1555384778851.jpg)
 
-```shell
-systemctl restart postgresql-10.service
-```
+-	修改business.properties[11]，修改文件中的输入数据源路径和输出数据的路径。此处decoder.output.1指向DataLoader-LTE2CMCC的输出目录。xdrcomposer.output指向xdrcomposer的数据输出目录。
 
-添加开机启动：
+![img](assets/clip_image002-1555384849285.jpg)
 
-```shell
-systemctl enable postgresql-10.service
-```
+【注意】
+只要business.properties[id]文件内容中包含了decoder的文件输出路径，就代表该节点是处理节点，此时business.properties[11]就代表了处理节点，11对应处理节点中this.properties中的id。集群环境可以配置一个控制节点和多个处理节点。多个处理节点，建议decoder文件数据目录配置相同，而使用scanner.filename-hashcode-range=0-255来分文件由谁处理，0-255表示全部
 
+![1555384982744](assets/1555384982744.png)
 
+配置文件加载时，先读取不带数字的，然后读取带数字的配置文件来更新，此处因为控制节点没有带数字的配置文件，所以采用该默认配置business.properties。另外因为合成需要用到配置表，比如说网元配置表，所以business.properties也需要配置GP库的访问信息。
 
-### 3.1.2    初始化N-Insight库表
 
-（1）  把N-Insight初始化脚本上传到n05/opt/do
 
-（2）切换到postgres用户
+#### 3.2.1.5	检查插件包适配
 
-```shell
-su – postgres
-```
+XdrComposer/plugins需要放入适配当前项目的插件包，比如海南的xdr数据合成就需要放入海南的插件包：
 
+![img](assets/clip_image002-1555385220435.jpg)
 
+放入后请检查是否有和其他项目的插件包冲突。
 
-![1555316379320](assets/1555316379320.png)
+同时将适配提供的Xdr.def放在配置中心/etc/CMCC/目录下
 
-（3）运行psql客户端
+#### 3.2.1.6	**参数配置**
 
-![1555316433239](assets/1555316433239.png)
+business.properties配置详细参数
 
-（4）导入初始化脚本
-
-```sql
-\i /opt/do/toolbox-postgres-init.sql
-```
-
-## 3.2  配置中心
-
-### 3.2.1  配置中心(Configurator)的作用
-
-DO项目由多个子应用组成，并且应用还需要集群化，每台机器上需要运行多个合成应用。每个应用都有一些参数需要配置，如果把每个应用的参数配置到应用中，参数会碎片化，不方便管理。配置中心(Configurator)主要目的是为了把所有应用的配置参数集中化管理。
-
-### 3.2.2  解压安装包
-
-进入安装目录，命令如下：
-
-```shell
-cd  /opt/do
-
-ls -al
-```
-
-![1555316482140](assets/1555316482140.png)
-
-解压Configurator安装包，命令如下所示：
-
-```shell
-tar  -xvf  Configurator.tar
-```
-
-
-
-### 3.2.3  配置N-Insight参数
-
-#### 3.2.3.1  配置数据源
-
-数据源主要作用：计算引擎、存储中间数据、存储计算结果。不同功能的数据源类型不一样，注册一种数据源首先需要先在datasources中注册，如果有多个数据源使用逗号分隔，如下示例：
-
-```properties
-datasources=spark1, mysql1
-```
-
-数据源注册后，需要再详细描述详细的配置参数，每个参数名必须存在，如果某个参数不需要设置，则置为空。N-Insight中主要有以下几种数据源：
-
-#### 3.2.3.2  Spark数据源
-
-Spark数据源作为计算引擎，需要以下参数：
-
-```properties
-spark1.source-type=XDR-CMCC-SPARK
-
-spark1.type=XDR-CMCC-SPARK
-
-spark1.title=CMDI Hadoop ENV
-
-spark1.arg.home=/opt/do/spark-2.2.0
-
-spark1.arg.configuration=/opt/do/spark-2.2.0/conf1
-
-spark1.arg.name=Toolbox-nokia
-
-spark1.arg.hivedb=result
-
-spark1.arg.hdfs=hdfs://bjmcc-hdp-cluster-node-06.do:8020/output/
-
-spark1.arg.staging=hdfs://vm73:8020/user/hdfs/.sparkStaging/
-
-spark1.arg.hiveSetting=mapred.input.dir.recursive=true
-```
-
-- spark1.source-type和spark1.type：为数据源的类型，执行计划中类型相同的数据源将作为列表中的待选项。
-- spark1.title：数据源标题，作为执行计划中数据源列表中的显示内容.
-- spark1.arg.home：spark计算引擎在N-Insight所在机器上的位置。
-- spark1.arg.configuration：spark配置文件在N-Insight的所在位置。
-- spark1.arg.name：数据源名称
-- spark1.arg.hivedb：spark计算的中间结果存放在hive中的库名，中间结果主要用于不同粒度的计算。如小时粒度的数据作为中间结果存放到hive中，天粒度的计算无需读取全天的源数据，直接读取全天小时粒度的中间结果计算出天粒度的数据。这样能大幅度减小输入的数据，提高运行效率。
-- spark1.arg.hdfs：中间结果目录。与hive不同的是hdfs目录主要用于缓存数据，作用于本次计算，本次计算完成的可以清理。
-- spark1.arg.staging：spark提交运行后存放jar包和配置文件的目录，主要用于同步standalong和yarn模式下的jar包和配置数据同步。不常用。
-- spark1.arg.hiveSetting：云平台比较个性的hive参数，用于创建sparkSession时加载。不常用。
-
-#### 3.2.3.3  关系库数据源
-
-关系库数据源的作用有两种：一是从关系库中读取一些参数数据表，数据量不能太大。二是把计算引擎中的计算结果输出到关系库，供界面展示。下面以Mysql为例，关系库数据源参数样例如下：
-
-```properties
-mysql1.source-type=MYSQL-NORMAL
-
-mysql1.type=MYSQL-NORMAL
-
-mysql1.title=CMDI MySQL
-
-mysql1.arg.host=10.254.201.233
-
-mysql1.arg.port=3306
-
-mysql1.arg.database=volte
-
-mysql1.arg.username=********
-
-mysql1.arg.password=********
-
-mysql1.arg.data_dir=/opt/do/Toolbox/data
-
-mysql1.arg.charset=utf-8
-```
-
--   mysql1.source-type和mysql1.type：数据源的类型，作为输入数据源时可以执行计划中类型相同的数据源将作为列表中的待选项。
--   mysql1.title：数据源标题，执行计划中数据源列表中的显示内容。仅作为输入数据源时使用，作为输出数据源时可置空。
--   mysql1.arg.host：关系数据库所在主机地址。
--   mysql1.arg.port：关系数据库使用的端口。
--   mysql1.arg.database：所使用的库名。
--   mysql1.arg.username和mysql1.arg.password：数据库的用户名和密码。
--   mysql1.arg.data_dir：存放计算结果临时目录。最终的计算结果会先存放到hdfs上，再从hdfs上以流的方式拉取到N-Insight所在主机中的临时目录，再从临时目录导入到关系库中。
--   mysql1.arg.charset：建立数据库连接时的编码，主要为解决中文乱码。
-
-#### 3.2.3.4  设置本项目的数据源
-
-编辑数据源配置文件，命令如下：
-
-```shell
-cd  /opt/do/Configurator/etc/Toolbox
-
-ls -al
-```
-
-![1555316757557](assets/1555316757557.png)
-
-用vi编辑datasource.properties文件，命令如下：
-
-```shell
-vi  datasource.properties
-```
-
-需要配置spark计算资源和mysql计算结果数据库以及本地的spark提交命令和N-Insight的callback地址。
-
-![1555316780117](assets/1555316780117.png)
-
-修改完成后保存退出(:wq)
-
--  runtime.spark.submit：提交spark任务的脚本位置。
--  datamining.callback：spark任务执行完成后的回调地址。回调地址主要把计算结果入到关系库及向消息中心中发送消息。
-
-
-
-### 3.2.4  配置N-Insight数据库
-
-用vi编辑system.properties文件，命令如下：
-
-```shell
-vi  /opt/do/Configurator/etc/Toolbox/system.properties
-```
-
-把3.1.2章节初始化的数据库信息及连接相关配置更新到system.properties
-
-![1555316829615](assets/1555316829615.png)
-
-修改完成后保存退出(:wq)
-
-该库是运行N-Insight的基础库，主要用于存放N-Insight的认证、执行计划、执行结果等数据。
-
--   system.jdbc.type：数据库的类型，green(postgres数据库)或oracle(oracle数据库)。
--   system.jdbc.driver：数据库的驱动程序类。
--   system.jdbc.url：连接数据库的url。
--   system.jdbc.username：数据库的用户名。
--   system.jdbc.password：数据库的密码。
--   system.jdbc.maxActive：连接池中最大的连接个数。
--   system.jdbc.minIdle：连接池中最小空闲连接数。
--   system.jdbc.initialSize：连接池中初始化连接数。
-
-### 3.2.5  启动配置中心
-
-#### 3.2.5.1    设置配置中心端口
-
-进入Configurator的配置目录，查看配置中心默认端口：
-
-```shell
-cd  /opt/do/Configurator/etc/
-
-cat web.properties
-```
-
-
-
-![1555316874562](assets/1555316874562.png)
-
-确认默认端口在本机是否被占用，命令如下所示：
-
-```shell
-telnet n05 8899
-```
-
-Connection refused表示该端口没有被占用
-
-![1555316896121](assets/1555316896121.png)
-
-#### 3.2.5.2    执行启动脚本
-
-执行Configurator的根目录启动脚本：
-
-```shell
-/opt/do/Configurator/startup.sh
-```
-
-下面代表配置中心启动成功
-
-![1555316921300](assets/1555316921300.png)
-
-## 3.3  N-Insight安装
-
-### 3.3.1    解压N-Insight安装包
-
-进入安装目录并执行解压命令，命令如下：
-
-```shell
-cd /opt/do
-
-tar -xvf Toolbox.tar
-```
-
-### 3.3.2    修改配置
-
-在N-Insight目录下进入配置文件目录，编辑this.properties文件：
-
-```shell
-cd Toolbox/etc
-
-vi this.properties
-```
-
-把配置路径指向配置中心：
-
-![1555316949335](assets/1555316949335.png)
-
-### 3.3.3    启动N-Insight
-
-进入N-Insight根目录，执行启动脚本，命令如下：
-
-```shell
-cd /opt/do/Toolbox
-
-./startup.sh
-```
-
-
-
-## 3.4  大数据客户端
-
-大数据客户端需要Hadoop集群平台运维人员安装。
+| 参数                            | 默认值                | 说明                                                         |
+| ------------------------------- | --------------------- | ------------------------------------------------------------ |
+| decoder.output.organization     | flat                  | 解码器输出目录类型    hourly：小时目录    flat：非小时目录   |
+| decoder.output.{num}            |                       | 解码器输出目录    num取值1-30，目前支持最大30个目录    配置了该项，则表明当前节点可以读取文件，即所谓的处理节点（读节点） |
+| scanner.filename-hashcode-range | 0-255                 | 节点读取文件的比例    将文件分成256份，配置0-255，表示全量读取    配置2-127，表示读取一半 |
+| file.clean.operation            | NOOP                  | 是否清除解码器文件：    NOOP：不做任何处理    DELETE:删除文件 |
+| scanner.datetime-min            | 2010010100            | 最小处理文件时间                                             |
+| scanner.datetime-max            | 2099010100            | 最大处理文件时间                                             |
+| database.type                   | oracle                | 数据库类型    目前仅支持oracle和GP    oracle：Oracle    green：GP库 |
+| common.driver                   |                       | oracle.jdbc.driver.OracleDriver    或    org.postgresql.Driver |
+| common.url                      |                       | 数据库实例                                                   |
+| common.username                 |                       | 数据库用户名                                                 |
+| common.password                 |                       | 数据库密码                                                   |
+| xdrcomposer.output              |                       | 合成输出目录                                                 |
+| xdrcomposer.output.organization | flat                  | 合成输出目录类型    hourly：小时目录，可以自动创建小时目录    flat：非小时目录 |
+| imsi_msisdn_path                |                       | IMSI和MSISDN映射关系保存目录                                 |
+| xdrcomposer.catch-time          | 300000                | 合成缓存时间，单位：ms                                       |
+| xdrcomposer.max-catch-time      | 3600000               | 最大换程缓存时间，单位：ms                                   |
+| xdrcomposer.max-state-alive     | 3600000               | 最大保存时间，单位：ms                                       |
+| xdrcomposer.real-catch-time     | 120000                | 真实缓存时间，单位：ms                                       |
+| xdrcomposer.output.wait-minutes | 10                    | 输出时间窗口，单位：分钟                                     |
+| xdrcomposer.output.line-limit   | 1000000               | 文件最多支持多少行，单位：行   以下三个参数满足任何一个则输出   xdrcomposer.output.line-limit   xdrcomposer.output.size-limit xdrcomposer.output.time-limit |
+| xdrcomposer.output.size-limit   | 128*1024*1024（128M） | 文件最大支持多大容量，单位：byte                             |
+| xdrcomposer.output.time-limit   | 5*60*1000（5分钟）    | 文件缓存等待时间，单位：ms                                   |
+| xdrcomposer.output.factor       | 1                     | 支持并发写几个文件，单位：个                                 |
+| CFG_PROVINCE                    | 898                   | 项目省份代码：    默认898，海南                              |
+
+cluster.properties详细参数配置
+
+
+
+| 参数              | 默认值                  | 说明                                                         |
+| ----------------- | ----------------------- | ------------------------------------------------------------ |
+| tickTime          | 2000                    |                                                              |
+| initLimit         | 10                      |                                                              |
+| syncLimit         | 30                      |                                                              |
+| minSessionTimeout | 60000                   |                                                              |
+| maxSessionTimeout | 120000                  |                                                              |
+| dataDir           |                         | zookeeper临时节点目录                                        |
+| dataPort          | 15000                   |                                                              |
+| dataPortAddress   | 127.0.0.1               | ip地址                                                       |
+| clientPort        | 15001                   |                                                              |
+| clientPortAddress | 127.0.0.1               |                                                              |
+| serverId          | 1                       | 是否控制节点：    1：控制节点    0：非控制节点               |
+| weight            | 1                       | 可支持小数    >0表示该节点是数据节点（输出节点）    处理文件比重为=weight/sum（weight） |
+| server.1          | localhost\:15102\:15103 | 控制节点ip和端口                                             |
+| server.2          | localhost\:15202\:15203 | 控制节点备用ip和端口                                         |
+| server.3          | localhost\:15302\:15303 | 控制节点备用ip和端口                                         |
+
+
+# 4.	系统的启动停止
+## 4.1	业务系统的启动
+进入控制节点
+
+  运行sh cluster.sh restart
+
+或者
+
+  sh cluster.sh stop
+
+  sh cluster.sh deploy
+
+  sh cluster.sh start
+
+  运行前建议将work目录和felix-cache目录中内容清空
+
+注意：程序执行完成后，还需要将XdrComposer/TODO目录下的tabledefinition.txt拷贝到配置中心/Configurator/etc/BIGXDR下。
+
+## 4.2	业务系统的停止
+  进入控制节点
+
+  运行sh cluster.sh stop
