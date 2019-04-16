@@ -1,6 +1,3 @@
-<link href="/css/shuiniu-outline.css" rel="stylesheet" type="text/css" />
-<link href="/iconfont/iconfont.css" rel="stylesheet" type="text/css" />
-
 # MT Service接口开发文档
 
 Version 7.1.6
@@ -612,8 +609,3 @@ public class RMIInvokerDemo {
 - 竖线分隔（oracle数据库示意）
   - ||，is null
   - |null|，=‘null’，字符串类型null
-
-<script type="text/javascript" src="/js/jquery/jquery-3.3.1.js"></script>
-<script type="text/javascript" src="/js/shuiniu-1.0.0.js"></script>
-<script type="text/javascript" src="/iconfont/iconfont.js"></script>
-<script type="text/javascript">$.shuiniu.outline();</script>
