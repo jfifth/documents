@@ -1,4 +1,4 @@
-# N-Insight系统安装手册
+# XdrComposer合成系统安装手册
 
 # 1.  文档说明
 
