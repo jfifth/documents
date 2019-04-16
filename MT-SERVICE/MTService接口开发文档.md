@@ -66,7 +66,7 @@ MT（Memory Transfer） Service是用于数据快速交换的中间件服务，�
 | ---- | --------------------------------- |
 | 规范接口 | 请求参数固定的调用方式 |
 | SQL查询接口 | 请求参数不固定的接口调用方式      |
-| MT SQL | 针对MT Server适配的结构化查询(SQL方言 |
+| MT SQL | 针对MT Server适配的结构化查询(SQL方言) |
 | 定值 | 即数据常量，值为不可变 |
 | rest | http协议的RESTFul接口风格调用方式 |
 | rmi  | RMI接口调用方式 |
@@ -85,6 +85,17 @@ MT（Memory Transfer） Service是用于数据快速交换的中间件服务，�
 
 - MT Server运行在JDK8环境上，RMI调用方需要使用JDK8及以上的环境；
 - RMI调用时，需要把调用客户端放到本地工程classpath路径内，调用者就存在该jar包内，同时存在其他的相关辅助类；
+
+## MT Service架构
+
+### 架构
+
+![MT Service架构和两个接口](./assets/mt-service.jpg)
+
+### 通用接口
+
+- 传入参数格式固定化
+- 输出数据格式固定化
 
 ## 辅助URL
 
