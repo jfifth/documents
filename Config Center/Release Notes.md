@@ -1,4 +1,4 @@
-# Config Center
+# Release Notes
 
 ### Version 3.0: [ongoing]
 
